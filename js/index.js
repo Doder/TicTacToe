@@ -8,8 +8,8 @@ var result = "";
 var intervalId;
 
 $(document).ready(function(){
-  
-  
+
+
   $( "#dialog-confirm" ).dialog({
       resizable: false,
       height:140,
@@ -38,38 +38,38 @@ function startGame(){
     player = 0;
     computer = 1;
   }
-  
+
   var rnd = Math.round(Math.random());
     if(rnd === 1){
       onMove = player;
     }else{
       onMove = computer;
     }
-  
-  
+
+
   intervalId = setInterval(loop, 100);
-  
-  
+
+
 }
 
 function loop(){
-	
-	
-	
-	
+
+
+
+
 	if(onMove === player){
       isValid = true;
     }else{
       computerMove();
       onMove = player;
     }
-	
-	
+
+
 	$(".cell").on("click", function(){
   if(isValid){
-	  
+
     var sign = player === 0 ? "O" : "X";
-    
+
     var i = $(this).attr("id")[1]-1;
     var j = $(this).attr("id")[2]-1;
     if(cells[i][j] === -1){
@@ -77,14 +77,14 @@ function loop(){
       $(this).html(sign);
       isValid = false;
 	  if(!whoWon(cells)){
-		 onMove = computer; 
+		 onMove = computer;
 	  }
     }
   }
 });
-	
-	
-    
+
+
+
     var winner = whoWon(cells);
     if(winner){
 	  if(winner === "computer"){
@@ -146,7 +146,7 @@ function whoWon(cells){
       }
     }
     }
-  
+
   if((cells[0][0] !== -1 &&
       cells[1][1] !== -1 &&
       cells[2][2] !== -1 &&
@@ -164,7 +164,7 @@ function whoWon(cells){
         return "computer";
       }
   }
-  
+
   return false;
 }
 
@@ -175,7 +175,7 @@ function computerMove(){
   var arr2 = bestMove();
   var sign = computer === 0 ? "O" : "X";
   var x = Math.round(Math.random()*arr.length);
-  
+
   if(arr2.length >= 1){
 	  var i = arr2[0];
 	  var j = arr2[1];
@@ -184,12 +184,16 @@ function computerMove(){
 	  var j = arr[x][1];
   }
   if((arr.length >= 1 || arr2.length >= 1) && cells[i][j] === -1){
-    cells[i][j] = computer;
-	i++;j++;
-    $("#c"+i+j).html(sign);
-	return 0;
+    var a = parseInt(i) + 1;
+    var b = parseInt(j) + 1;
+    new Promise(function(resolve, reject){
+      $("#c"+a+b).html(sign);
+      resolve();
+    }).then(function(){
+       cells[i++][j++] = computer; })
+	  return 0;
 	}
-  
+
 }
 
 function freeCells(){
@@ -231,9 +235,9 @@ function bestMove(){
 		computerInLine = 0;
 		playerInLine = 0;
 	}
-	
+
 	//check columns
-	
+
 	for(var j in cells){
 		for(var i in cells[i]){
 			if(cells[i][j] !== -1){
@@ -255,7 +259,7 @@ function bestMove(){
 		computerInLine = 0;
 		playerInLine = 0;
 	}
-	
+
 	//check diagonals
 	var h = 0;
 	a = -1;
@@ -273,22 +277,22 @@ function bestMove(){
 			a = k;
 			b = h;
 		}
-		
+
 		if(computerInLine === 2 && a !== -1 && b !== -1){
 			return [a, b];
 		}else if(playerInLine === 2 && a !== -1 && b != -1){
 			maybe = [a, b];
 		}
-		
+
 		h++;
 	}
-	
+
 	h = 0;
 	a = -1;
 	b = -1;
 	playerInLine = 0;
 	computerInLine = 0;
-	
+
 	for(var k = 2; k >= 0; k--){
 		if(cells[k][h] !== -1){
 			if(cells[k][h] === computer){
@@ -300,20 +304,20 @@ function bestMove(){
 			a = k;
 			b = h;
 		}
-		
+
 		if(computerInLine === 2 && a !== -1 && b !== -1){
 			return [a, b];
 		}else if(playerInLine === 2 && a !== -1 && b != -1){
 			maybe = [a, b];
 		}
-		
+
 		h++;
 	}
-	
-	
-	
+
+
+
 	if(maybe !== null) return maybe;
-	
+
 	return [];
 }
 
